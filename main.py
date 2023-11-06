@@ -17,27 +17,58 @@ def generate():
         default="Bugs"
     ).execute()
     if action == "Bugs":
-        critter = generate_bug()
+        generate_bug()
     elif action == "Fish":
-        critter = generate_fish()
+        generate_fish()
     elif action == "Sea Creatures":
-        critter = generate_sea_creature()
+        generate_sea_creature()
     else:
-        critter = "Nothing :("
+        print("Nothing :(")
 
-    print(f'You got: {critter}')
 
 def generate_bug():
     """Generates a random bug"""
-    return "common butterfly"
+    critter = "common butterfly"
+    print(f'You got: {critter}')
+    value = regenerate_prompt()
+    if value is True:
+        generate_bug()
+    else:
+        return
 
 def generate_fish():
     """Generates a random fish"""
-    return "bitterling"
+    critter = "bitterling"
+    print(f'You got: {critter}')
+    value = regenerate_prompt()
+    if value is True:
+        generate_fish()
+    else:
+        return
 
 def generate_sea_creature():
     """Generates a random sea creature"""
-    return "seaweed"
+    critter = "seaweed"
+    print(f'You got: {critter}')
+    value = regenerate_prompt()
+    if value is True:
+        generate_sea_creature()
+    else:
+        return
+
+def regenerate_prompt():
+    action = inquirer.select(
+        message="Would you like to Continue?",
+        choices=[
+            "Yes",
+            Choice(value=None, name="- STOP"),
+        ],
+        default="Bugs"
+    ).execute()
+    if action == "Yes":
+        return True
+    else:
+        return
 
 def view():
     action = inquirer.select(
@@ -60,12 +91,26 @@ def view():
 def view_bugs():
     with open("json/bugs.json", "r", encoding="utf-8") as json_file:
         data = json.load(json_file)
+        for critter_data in data.values():
+            name = critter_data["name"]["name-USen"]
+            print(name)
 
 def view_fish():
-    pass
+    with open("json/fish.json", "r", encoding="utf-8") as json_file:
+        data = json.load(json_file)
+        for critter_data in data.values():
+            name = critter_data["name"]["name-USen"]
+            print(name)
 
 def view_sea_creatures():
-    pass
+    with open("json/sea.json", "r", encoding="utf-8") as json_file:
+        data = json.load(json_file)
+        for critter_data in data.values():
+            name = critter_data["name"]["name-USen"]
+            print(name)
+
+def search():
+    search = inquirer.text(message="Search for a critter:").execute()
 
 def home_nav():
     action = inquirer.select(
@@ -89,7 +134,7 @@ def main():
         if action == "Generate Random":
             generate()
         elif action == "Search":
-            pass
+            search()
         elif action == "View Critters":
             view()
         else:
