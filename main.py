@@ -6,17 +6,34 @@ import json
 import time
 import sys
 from datetime import datetime
+from clint.textui import puts, indent, colored
 
 class Date:
-    def __init__(self, date):
+    def __init__(self, date, hemisphere):
         self.date = date
+        self.hemisphere = hemisphere
 
     def display_date(self):
-        print(f"Date: {self.date}")
+        puts(colored.yellow(f"Date: {self.date.date()}"))
 
     def change_date(self, month):
         pass
+def gen_randint():
+    """Partner's Microservice"""
+    # Microservice will generate random integer between 0-100 and store it in the randint-service text file
+    # You can also send other data within the text file if you wish
+    f = open("randint-service.txt", "w")
+    f.write("run")
+    f.close()
 
+def get_randint(type):
+    """Partner's Microservice"""
+    # Example.py will receive data from communication pipeline and store it in rand_num variable
+    loading_bubble(type)
+    f = open("randint-service.txt", "r")
+    rand_num = f.read()
+    f.close()
+    return rand_num
 
 def generate():
     """Generates a random critter depending on which option the user selects"""
@@ -37,14 +54,20 @@ def generate():
     elif action == "Sea Creatures":
         generate_sea_creature()
     else:
-        print("Nothing :(")
-
+        return
 
 def generate_bug():
     """Generates a random bug"""
-    critter = "common butterfly"
-    loading_bubble("catching")
-    print(f'You got: {critter}')
+    gen_randint()
+    index = get_randint("catching")
+    with open("json/bugs.json", "r", encoding="utf-8") as json_file:
+        data = json.load(json_file)
+        critter_name_en = "Nothing :("
+        for critter_name, critter_data in data.items():
+            if int(index) == critter_data["id"]:
+                critter_name_en = critter_data["name"]["name-USen"]
+    with indent(4):
+        puts(colored.cyan(f'You got: {critter_name_en}'))
     value = regenerate_prompt()
     if value is True:
         generate_bug()
@@ -53,9 +76,16 @@ def generate_bug():
 
 def generate_fish():
     """Generates a random fish"""
-    critter = "bitterling"
-    loading_bubble("fishing")
-    print(f'You got: {critter}')
+    gen_randint()
+    index = get_randint("fishing")
+    with open("json/fish.json", "r", encoding="utf-8") as json_file:
+        data = json.load(json_file)
+        critter_name_en = "Nothing :("
+        for critter_name, critter_data in data.items():
+            if int(index) == critter_data["id"]:
+                critter_name_en = critter_data["name"]["name-USen"]
+    with indent(4):
+        puts(colored.cyan(f'You got: {critter_name_en}'))
     value = regenerate_prompt()
     if value is True:
         generate_fish()
@@ -64,9 +94,16 @@ def generate_fish():
 
 def generate_sea_creature():
     """Generates a random sea creature"""
-    critter = "seaweed"
-    loading_bubble("diving")
-    print(f'You got: {critter}')
+    gen_randint()
+    index = get_randint("diving")
+    with open("json/sea.json", "r", encoding="utf-8") as json_file:
+        data = json.load(json_file)
+        critter_name_en = "Nothing :("
+        for critter_name, critter_data in data.items():
+            if int(index) == critter_data["id"]:
+                critter_name_en = critter_data["name"]["name-USen"]
+    with indent(4):
+        puts(colored.cyan(f'You got: {critter_name_en}'))
     value = regenerate_prompt()
     if value is True:
         generate_sea_creature()
@@ -75,16 +112,15 @@ def generate_sea_creature():
 
 def loading_bubble(type: str):
     """Loading bubble"""
-    sys.stdout.write(f'\r{type} ')
+    sys.stdout.write(f'\r    {type} ')
     time.sleep(0.5)
-    sys.stdout.write(f'\r{type} ○')
+    sys.stdout.write(f'\r    {type} ○')
     time.sleep(0.5)
-    sys.stdout.write(f'\r{type} ○ ○')
+    sys.stdout.write(f'\r    {type} ○ ○')
     time.sleep(0.5)
-    sys.stdout.write(f'\r{type} ○ ○ ○')
+    sys.stdout.write(f'\r    {type} ○ ○ ○')
     time.sleep(0.5)
-    sys.stdout.write('\r')
-
+    sys.stdout.write('\r' + ' ' * 20 + '\r')
 
 def regenerate_prompt():
     action = inquirer.select(
@@ -93,14 +129,14 @@ def regenerate_prompt():
             "Yes",
             Choice(value=None, name="- STOP"),
         ],
-        default="Bugs"
+        default="Yes"
     ).execute()
     if action == "Yes":
         return True
     else:
         return
 
-def view(user_date):
+def view(user_date_obj):
     action = inquirer.select(
         message="Choose Critter Type",
         choices=[
@@ -112,11 +148,11 @@ def view(user_date):
         default="Bugs"
     ).execute()
     if action == "Bugs":
-        view_bugs(user_date)
+        view_bugs(user_date_obj.date)
     if action == "Fish":
-        view_fish(user_date)
+        view_fish(user_date_obj.date)
     if action == "Sea Creatures":
-        view_sea_creatures(user_date)
+        view_sea_creatures(user_date_obj.date)
 
 def print_available_critters(user_date, data):
     for critter_name, critter_data in data.items():
@@ -128,7 +164,8 @@ def print_available_critters(user_date, data):
             critter_time = critter_data["availability"]["time"]
             if critter_time == "":
                 critter_time = "all day"
-            print(f"{critter_name_en}, {critter_time}")
+            with indent(4):
+                puts(colored.green(f"{critter_name_en}, {critter_time}"))
 
 def view_bugs(user_date):
     with open("json/bugs.json", "r", encoding="utf-8") as json_file:
@@ -150,7 +187,19 @@ def search():
     search = inquirer.text(message="Search for a critter:").execute()
 
 def about():
-    print("[insert more information about Search feature]")
+    with indent(4):
+        puts(colored.yellow("What is this Animal Crossing Critterpedia Library?"))
+    with indent(8):
+        puts("Animal Crossing New Horizon is game made by Nintendo. In the game there are three types of critters")
+        puts("which the player can catch: bugs, fish, and sea creatures. The availability any individual critter")
+        puts("depends on date and time in real life. This library allows users to check the availability of critter on")
+        puts("the current day.")
+    with indent(4):
+        puts(colored.yellow("How to Use:"))
+    with indent(8):
+        puts("Today's Critters: Display the current critters available today")
+        puts("Change Date: Configure the date to a different month or change the hemisphere")
+        puts("Search: [insert more information about Search feature]")
 
 def change_display_date(new_date):
     display_date = new_date
@@ -160,6 +209,7 @@ def home_nav():
         message="Select an action:",
         choices=[
             "Today's Critters",
+            "Change Date",
             "Generate Random",
             "Search",
             "About",
@@ -170,15 +220,18 @@ def home_nav():
     return action
 
 def main():
-    user_date_obj = Date(datetime.now())
-    print("Welcome Animal Crossing Critterpedia Library")
+    user_date_obj = Date(datetime.now(), "northern")
+    puts(colored.yellow("Welcome Animal Crossing Critterpedia Library"))
+    puts(colored.yellow("This library displays the currently available critters in the game Animal Crossing New Horizon based on the date. Visit about page for more info."))
+    puts(colored.yellow("use `arrow keys` and `enter` for navigating between options"))
     user_date_obj.display_date()
-    print("use `arrow keys` and `enter` for navigating between options")
     print("------------------------------------------------------------")
     while True:
         action = home_nav()
         if action == "Today's Critters":
-            view(user_date_obj.date)
+            view(user_date_obj)
+        elif action == "Change Date":
+            pass
         elif action == "Generate Random":
             generate()
         elif action == "Search":
