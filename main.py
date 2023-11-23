@@ -57,7 +57,7 @@ def generate():
         return
 
 def generate_bug():
-    """Generates a random bug"""
+    """Generates a random bug """
     gen_randint()
     index = get_randint("catching")
     with open("json/bugs.json", "r", encoding="utf-8") as json_file:
