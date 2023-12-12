@@ -7,6 +7,7 @@ from datetime import datetime
 from clint.textui import puts, indent, colored
 import calendar
 
+
 class Date:
     """Object that represents user's current date and hemisphere"""
     def __init__(self, date, hemisphere):
@@ -29,6 +30,7 @@ class Date:
         """Reassign user's hemisphere"""
         self.hemisphere = new_hemisphere.lower()
 
+
 def gen_randint():
     """Partner's Microservice"""
     # Microservice will generate random integer between 0-100 and store it in the randint-service text file
@@ -36,6 +38,7 @@ def gen_randint():
     f = open("randint-service.txt", "w")
     f.write("run")
     f.close()
+
 
 def get_randint(type):
     """Partner's Microservice"""
@@ -45,6 +48,7 @@ def get_randint(type):
     rand_num = f.read()
     f.close()
     return rand_num
+
 
 def generate():
     """Generates a random critter depending on which option the user selects"""
@@ -64,6 +68,7 @@ def generate():
         return
 
     generate_critter(category)
+
 
 def generate_critter(category):
     """Simulates catching a random critter based on critter type"""
@@ -101,6 +106,7 @@ def generate_critter(category):
     else:
         return
 
+
 def loading_bubble(type: str):
     """Loading bubble"""
     sys.stdout.write(f'\r    {type} ')
@@ -112,6 +118,7 @@ def loading_bubble(type: str):
     sys.stdout.write(f'\r    {type} ○ ○ ○')
     time.sleep(0.5)
     sys.stdout.write('\r' + ' ' * 20 + '\r')
+
 
 def available_critters(user_date_obj):
     """Prompts user by what critter type they want to view available critters"""
@@ -154,6 +161,7 @@ def available_critters(user_date_obj):
     else:
         return
 
+
 def print_available_critters(user_date, user_hemisphere, data):
     """Displays critters available today"""
     for critter_name, critter_data in data.items():
@@ -167,6 +175,7 @@ def print_available_critters(user_date, user_hemisphere, data):
                 critter_time = "all day"
             with indent(4):
                 puts(colored.green(f"{critter_name_en}, {critter_time}"))
+
 
 def search():
     """Search and print critter information"""
@@ -199,6 +208,7 @@ def search():
     else:
         return
 
+
 def search_critter(category, search_term):
     """Search for critter in JSON files by category and user's search term. Return True, if critter found."""
     with open(f"json/{category}.json", "r", encoding="utf-8") as json_file:
@@ -223,6 +233,7 @@ def search_critter(category, search_term):
                 with indent(4):
                     puts(colored.green(f"Sell Price: {critter_data['price']} Bells"))
                 return True
+
 
 def change_date_hemisphere(user_date_obj):
     """Prompts user to change date and hemisphere"""
@@ -266,6 +277,7 @@ def change_date_hemisphere(user_date_obj):
     user_date_obj.change_date(new_date)
     user_date_obj.change_hemisphere(new_hemisphere)
 
+
 def about():
     """Displays an about page for additonal information and instructions"""
     with indent(4):
@@ -296,6 +308,7 @@ def about():
         default="← BACK"
     ).execute()
 
+
 def home_nav():
     """Homepage"""
     action = inquirer.select(
@@ -311,6 +324,7 @@ def home_nav():
         default="Generate Name",
     ).execute()
     return action
+
 
 def main():
     user_date_obj = Date(datetime.now(), "northern")
@@ -335,6 +349,7 @@ def main():
             about()
         else:
             break
+
 
 if __name__ == "__main__":
     main()
