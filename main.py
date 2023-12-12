@@ -150,6 +150,7 @@ def available_critters(user_date_obj):
         choices=[
             "View Other Critter Types",
             "Search",
+            "Change Date & Hemisphere",
             Choice(value=None, name="← BACK"),
         ],
         default="Yes"
@@ -158,6 +159,8 @@ def available_critters(user_date_obj):
         available_critters(user_date_obj)
     elif action == "Search":
         search()
+    elif action == "Change Date & Hemisphere":
+        change_date_hemisphere(user_date_obj)
     else:
         return
 
@@ -297,7 +300,7 @@ def about():
         puts("The search function is somewhat case sensitive, so make sure that you include spaces and punctuation.")
         puts(colored.yellow("Change Date & Hemisphere:") + " Configures the hemisphere or date to a different month.")
         puts("This alters the critters that are displayed on `Today's Critters`.")
-        puts(colored.yellow("Generate Random") + "Let's you simulate catching a critter, like in Animal Crossing")
+        puts(colored.yellow("Generate Random:") + " Let's you simulate catching a critter, like in Animal Crossing.")
         puts("Note that there is a chance that you will be returned nothing.")
 
     inquirer.select(
